@@ -1,0 +1,82 @@
+# Template file for 'vscode-bin'
+pkgname=vscode-bin
+version=1.100.3
+revision=1
+short_desc="Microsoft Visual Studio Code (proprietary binary release)"
+maintainer=""
+license="custom:MSFT"
+homepage="https://code.visualstudio.com/"
+repository=nonfree
+depends="libXtst nss xdg-utils libsecret libxkbfile"
+nocross=yes
+create_wrksrc=yes
+
+case "$XBPS_TARGET_MACHINE" in
+	x86_64)
+		_vscode_arch="x64"
+		distfiles="https://update.code.visualstudio.com/${version}/linux-x64/stable>vscode-${version}-linux-x64.tar.gz"
+		checksum="ad193cffdfb1df1bb14fff51ff92240bbe2b0c8c8c60484b8c479eb0d0b2a44d"
+		;;
+	aarch64)
+		_vscode_arch="arm64"
+		distfiles="https://update.code.visualstudio.com/${version}/linux-arm64/stable>vscode-${version}-linux-arm64.tar.gz"
+		checksum="PLACEHOLDER_run_sha256sum"
+		;;
+	armv7l)
+		_vscode_arch="armhf"
+		distfiles="https://update.code.visualstudio.com/${version}/linux-armhf/stable>vscode-${version}-linux-armhf.tar.gz"
+		checksum="PLACEHOLDER_run_sha256sum"
+		;;
+	*)
+		broken="Unsupported architecture: ${XBPS_TARGET_MACHINE}"
+		;;
+esac
+
+do_extract() {
+	# --strip-components 1 removes VSCode-linux-x64/ prefix
+	# extracts directly into wrksrc — no mv needed
+	bsdtar -xf "${XBPS_SRCDISTDIR}/${pkgname}-${version}/vscode-${version}-linux-${_vscode_arch}.tar.gz" \
+		-C "${wrksrc}" --strip-components 1
+}
+
+do_install() {
+	# Install all binary files
+	vmkdir usr/lib/${pkgname}
+	cp -a "${wrksrc}/." "${DESTDIR}/usr/lib/${pkgname}/"
+
+	# Binary symlink
+	vmkdir usr/bin
+	ln -sf /usr/lib/${pkgname}/bin/code "${DESTDIR}/usr/bin/code"
+
+	# Icon
+	vmkdir usr/share/pixmaps
+	install -m644 "${wrksrc}/resources/app/resources/linux/code.png" \
+		"${DESTDIR}/usr/share/pixmaps/code.png"
+
+	# Desktop entry — not in tarball, create manually
+	vmkdir usr/share/applications
+	cat > "${DESTDIR}/usr/share/applications/code.desktop" <<-END
+		[Desktop Entry]
+		Name=Visual Studio Code
+		Comment=Code Editing. Redefined.
+		GenericName=Text Editor
+		Exec=/usr/lib/${pkgname}/bin/code --unity-launch %F
+		Icon=code
+		Type=Application
+		StartupNotify=false
+		StartupWMClass=Code
+		Categories=TextEditor;Development;IDE;
+		MimeType=text/plain;inode/directory;application/x-code-workspace;
+		Actions=new-empty-window;
+
+		[Desktop Action new-empty-window]
+		Name=New Empty Window
+		Exec=/usr/lib/${pkgname}/bin/code --new-window %F
+		Icon=code
+	END
+
+	# License
+	vlicense "${wrksrc}/resources/app/LICENSE.rtf"
+
+	chmod -R o-w "${DESTDIR}/usr/lib/${pkgname}/"
+}
