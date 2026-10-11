@@ -1,17 +1,29 @@
 # Template file for 'google-chrome'
 pkgname=google-chrome
-version=149.0.7827.53
+version=154.0.8037.97
 revision=1
 _channel=stable
-archs="x86_64"
+archs="x86_64 aarch64"
 hostmakedepends="python3-html2text python3-setuptools"
 depends="gtk+3"
 short_desc="Attempt at creating a safer, faster, and more stable browser"
 maintainer="Michael Aldridge <maldridge@voidlinux.org>"
 license="custom:chrome"
 homepage="https://www.google.com/chrome/"
-distfiles="https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-${_channel}_${version}-1_amd64.deb"
-checksum=8aa34d8c9cbd5a37b98dca49ad0607bbf819a6d681c19834599cdb65329498f8
+
+case "$XBPS_TARGET_MACHINE" in
+x86_64)
+	distfiles="https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-${_channel}_${version}-1_amd64.deb"
+	checksum=a4edbe95e9b01db6c9b97d7a1323121eda18362b5620df06abac1b59bee80053
+	;;
+aarch64)
+	distfiles="https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-${_channel}_${version}-1_arm64.deb"
+	checksum=e8b589908ac79a0b8bdb8b7fc56824a27221d56fb9757d4541065fe5d1fbf78e
+	;;
+*)
+	broken="No distfiles available for this target"
+	;;
+esac
 
 skiprdeps="/opt/google/chrome/libqt5_shim.so /opt/google/chrome/libqt6_shim.so"
 repository=nonfree

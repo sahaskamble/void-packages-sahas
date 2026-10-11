@@ -1,14 +1,13 @@
 # Template file for 'Vulkan-Utility-Libraries'
 pkgname=Vulkan-Utility-Libraries
-version=1.4.341.0
+version=1.4.357.0
 revision=1
 build_style=cmake
-configure_args="-DVULKAN_HEADERS_INSTALL_DIR=${XBPS_CROSS_BASE}/usr"
-hostmakedepends="pkg-config"
 makedepends="Vulkan-Headers"
+depends="Vulkan-Headers"
 short_desc="Khronos official Vulkan utility libraries"
 maintainer="Orphaned <orphan@voidlinux.org>"
 license="Apache-2.0"
 homepage="https://www.khronos.org/vulkan/"
 distfiles="https://github.com/KhronosGroup/Vulkan-Utility-Libraries/archive/vulkan-sdk-${version}.tar.gz"
-checksum=4438cd451b51b5cd13de924bd9d5015c35a06a69e4423452edf79bad646f0469
+checksum=6d450436aea4a821d7b0d8bb914c2e375088d98eeeaad0fbf059fdb06ac937f4
